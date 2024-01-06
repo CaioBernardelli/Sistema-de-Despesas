@@ -57,15 +57,54 @@ def exibir_categorias():
     relatorio.config(state=tk.DISABLED)
 
 
+
+def calcular_despesa_por_categoria():
+    try:
+        global despesas
+        result_message.set("")  # Limpa a mensagem de erro
+        categoria = categoria2_entry.get()
+        total_categoria = 0
+
+        for despesa in despesas:
+            if despesa['categoria'] == categoria:
+                total_categoria += despesa['valor']
+
+        if total_categoria > 0:
+            result_message.set(f"Total da categoria {categoria}: R$ {total_categoria:.2f}")
+            message_label.configure(foreground="black")
+        else:
+            result_message.set(f"Nenhuma despesa encontrada para a categoria {categoria}.")
+            message_label.configure(foreground="black")
+
+    except ValueError:
+        result_message.set("Erro de Valor: Por favor, insira uma categoria válida.")
+        message_label.configure(foreground="red")
+
+            
+      
+
+
 def adicionar_despesa_click():
     try:
         global despesas
         result_message.set("")  # Limpa a mensagem de erro
         valor = float(valor_entry.get())
         categoria = categoria_entry.get()
-        adicionar_despesa(valor, categoria)
-        result_message.set(f" Despesa  adicionada com sucesso ,Categoria {categoria} e Valor{valor} .")
-        message_label.configure(foreground="black")
+        
+        
+        if not valor or not categoria:
+            result_message.set("Erro: Por favor, preencha todos os campos.")
+            message_label.configure(foreground="red")
+        
+        else:
+            # Convertendo o valor para float
+            valor = float(valor)
+            
+            # Adicionando a despesa
+            adicionar_despesa(valor, categoria)
+            
+            result_message.set(f"Despesa adicionada com sucesso, Categoria: {categoria}, Valor: {valor}.")
+            message_label.configure(foreground="black")
     except ValueError:
         result_message.set("Erro de Valor: Por favor, insira um valor válido.")
         message_label.configure(foreground="red")
@@ -140,6 +179,17 @@ relatorio.grid(row=4, column=0, columnspan=2, pady=5, padx=5)
 #  botão "Relatório"
 relatorio_button = ttk.Button(frame, text="Relatório", command=exibir_relatorio)
 relatorio_button.grid(row=5, column=0, columnspan=4, pady=10)
+
+
+
+
+categoria2_label = ttk.Label(frame, text="Digite a Categoria:")
+categoria2_entry = ttk.Entry(frame)
+categoria2_label.grid(row=0, column=2, padx=1, pady=5, sticky=tk.W)
+categoria2_entry.grid(row=1, column=2, padx=1, pady=5, sticky=tk.W)
+calcular_button = ttk.Button(frame,text="Calcular Despesa", command=calcular_despesa_por_categoria)
+calcular_button.grid(row=2, column=2, columnspan=4, pady=10)
+
 
 # Carregar despesas
 despesas = carregar_despesas()
